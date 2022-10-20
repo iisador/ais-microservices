@@ -10,7 +10,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import ru.isador.ais.microservices.client.ClientConverter;
 import ru.isador.ais.microservices.client.ClientService;
@@ -43,10 +45,10 @@ public class ClientResource {
     }
 
     @POST
-    public Response create(ClientView newClient) {
+    public Response create(ClientView newClient, @Context UriInfo uriInfo) {
         try {
             clientService.registerNewClient(newClient);
-            return Response.ok().build();
+            return Response.created(uriInfo.getAbsolutePathBuilder().path(newClient.getLogin()).build()).build();
         } catch (ExistedClientException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("User already exists")

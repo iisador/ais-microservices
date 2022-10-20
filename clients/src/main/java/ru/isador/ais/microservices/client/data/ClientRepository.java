@@ -37,6 +37,12 @@ public class ClientRepository {
     }
 
     @Transactional
+    public void exterminate() {
+        entityManager.createQuery("delete from Client c")
+                .executeUpdate();
+    }
+
+    @Transactional
     public void save(Collection<Client> clients) {
         clients.forEach(entityManager::persist);
     }
