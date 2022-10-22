@@ -1,45 +1,39 @@
 package ru.isador.ais.microservices.client;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import ru.isador.ais.microservices.client.data.Client;
 import ru.isador.ais.microservices.client.data.ClientRepository;
-import ru.isador.ais.microservices.client.web.ClientView;
+import ru.isador.ais.microservices.client.web.ClientInput;
 
-@ApplicationScoped
+@Service
 public class ClientService {
 
     private ClientRepository clientRepository;
-    private ClientConverter clientConverter;
 
-    public void registerNewClient(ClientView newClientView) {
-        if (clientRepository.findByLogin(newClientView.getLogin()).isPresent()) {
-            throw new ExistedClientException(newClientView.getLogin());
+    public Client registerNewClient(ClientInput newClientModel) {
+        if (clientRepository.findByLogin(newClientModel.getLogin()).isPresent()) {
+            throw new ExistedClientException(newClientModel.getLogin());
         }
-        Client newClient = clientConverter.toModel(newClientView);
-        clientRepository.save(newClient);
+        Client newClient = new Client(newClientModel.getName(), newClientModel.getPassword(), newClientModel.getLogin());
+        newClient.addRole(SystemRoles.USER);
+        return clientRepository.save(newClient);
     }
 
-    public ClientView update(String login, ClientView modifiedClient) {
+    public Client update(String login, ClientInput modifiedClient) {
         return clientRepository.findByLogin(login)
                 .map(c -> {
                     c.setPassword(modifiedClient.getPassword());
                     c.setName(modifiedClient.getName());
                     return c;
                 })
-                .map(clientRepository::update)
-                .map(clientConverter::toView)
+                .map(clientRepository::save)
                 .orElseThrow(() -> new UserNotFoundException(login));
     }
 
-    @Inject
+    @Autowired
     public void setClientRepository(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
-    }
-
-    @Inject
-    public void setClientConverter(ClientConverter clientConverter) {
-        this.clientConverter = clientConverter;
     }
 }

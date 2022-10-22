@@ -1,18 +1,19 @@
 package ru.isador.ais.microservices.client.web;
 
-public class ClientView {
+import java.io.Serializable;
 
-    private String name;
+public class ClientInput implements Serializable {
+
     private String login;
+    private String name;
     private String password;
 
-    public ClientView() {
+    public String getLogin() {
+        return login;
     }
 
-    public ClientView(String name, String login, String password) {
-        this.name = name;
+    public void setLogin(String login) {
         this.login = login;
-        this.password = password;
     }
 
     public String getName() {
@@ -21,14 +22,6 @@ public class ClientView {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
     }
 
     public String getPassword() {

@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  clients:
+    build: /clients
+    ports:
+      - 8080:8080
+
+  orders:
+    build: /orders
+    ports:
+      - 8081:8080

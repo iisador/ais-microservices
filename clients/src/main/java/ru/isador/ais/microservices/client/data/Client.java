@@ -1,19 +1,20 @@
 package ru.isador.ais.microservices.client.data;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "clients")
 public class Client implements Serializable {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column
@@ -31,7 +32,7 @@ public class Client implements Serializable {
     public Client() {
     }
 
-    public Client(String name, String password, String login, String ... roles) {
+    public Client(String name, String password, String login, String... roles) {
         this.name = name;
         this.password = password;
         this.login = login;
@@ -68,6 +69,16 @@ public class Client implements Serializable {
 
     public void setRoles(String roles) {
         this.roles = roles;
+    }
+
+    public void addRole(String role) {
+        if (role != null) {
+            if (roles == null) {
+                roles = role;
+            } else {
+                roles += "," + role;
+            }
+        }
     }
 
     public String getLogin() {

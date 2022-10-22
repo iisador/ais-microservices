@@ -1,36 +1,34 @@
 package ru.isador.ais.microservices.order;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import ru.isador.ais.microservices.order.data.Order;
 import ru.isador.ais.microservices.order.data.OrderRepository;
-import ru.isador.ais.microservices.order.web.OrderView;
+import ru.isador.ais.microservices.order.web.OrderInput;
 
-@ApplicationScoped
+@Service
 public class OrderService {
 
     private OrderRepository orderRepository;
-    private OrderConverter orderConverter;
 
-    public OrderView update(Long id, OrderView modifiedOrder) {
-        return orderRepository.find(id)
+    public Order update(Long id, OrderInput modifiedOrder) {
+        return orderRepository.findById(id)
                 .map(o -> {
                     o.setDeliveryAddress(modifiedOrder.getDeliveryAddress());
                     o.setDescription(modifiedOrder.getDescription());
                     return o;
                 })
-                .map(orderRepository::update)
-                .map(orderConverter::toView)
+                .map(orderRepository::save)
                 .orElseThrow(() -> new OrderNotFoundException(id));
     }
 
-    @Inject
-    public void setOrderRepository(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    public Order newOrder(OrderInput orderInput) {
+        return orderRepository.save(new Order(orderInput.getDeliveryAddress(), orderInput.getDescription()));
     }
 
-    @Inject
-    public void setOrderConverter(OrderConverter orderConverter) {
-        this.orderConverter = orderConverter;
+    @Autowired
+    public void setOrderRepository(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
     }
 }
