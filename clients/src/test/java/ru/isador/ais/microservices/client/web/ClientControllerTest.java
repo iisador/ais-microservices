@@ -1,6 +1,5 @@
 package ru.isador.ais.microservices.client.web;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.isador.ais.microservices.client.data.Client;
 import ru.isador.ais.microservices.client.data.ClientRepository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,7 +49,7 @@ class ClientControllerTest {
 
         int actualClients = clientRepository.findAll().size();
 
-        Assertions.assertEquals(clientCount + 1, actualClients, "Error creating client");
+        assertEquals(clientCount + 1, actualClients, "Error creating client");
     }
 
     @Test
@@ -75,11 +75,10 @@ class ClientControllerTest {
                                   "login": "newUser"
                                 }
                                 """))
-                .andExpect(status().isAccepted())
-                .andExpect(content().string("User newUser already registered"));
+                .andExpect(status().isAccepted());
 
         int actualClients = clientRepository.findAll().size();
 
-        Assertions.assertEquals(clientCount, actualClients, "Error computing existed client");
+        assertEquals(clientCount, actualClients, "Error computing existed client");
     }
 }

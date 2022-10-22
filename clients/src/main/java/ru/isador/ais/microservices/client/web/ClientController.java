@@ -57,7 +57,7 @@ public class ClientController {
     @DeleteMapping("/{login}")
     public ResponseEntity<?> remove(@PathVariable("login") String login) {
         clientRepository.deleteByLogin(login);
-        return ResponseEntity.ok("OK");
+        return ResponseEntity.noContent().build();
     }
 
     @Autowired

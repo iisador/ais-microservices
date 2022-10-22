@@ -1,0 +1,222 @@
+openapi: '3.0.3'
+info:
+  title: 'Сервис работы с клиентами'
+  description: >
+    Практическая работа по курсу АИС (ИТ17.9д): "Микросервисная архитектура"
+    Реализация сервиса работы с клиентами.
+  version: '1.0.0'
+
+paths:
+  /api/clients:
+    get:
+      summary: 'Вывести полный список клиентов'
+      operationId: 'list'
+      responses:
+        '200':
+          description: 'Массив клиентов'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClientModel'
+        '500':
+          description: "Непредвиденная серверная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+
+    post:
+      summary: 'Создание нового клиента'
+      operationId: 'create'
+      requestBody:
+        required: true
+        description: 'Описание нового клиента'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewClientInput'
+            example: '{ "name": "Новоюзер Новоюзерович", "password": "newPass", "login": "newUser" }'
+      responses:
+        '201':
+          description: 'Новый клиент создан'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientModel'
+        '202':
+            description: 'Такой клиент уже был создан ранее'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SystemError'
+        '500':
+          description: "Непредвиденная серверная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+
+
+  /api/clients/{login}:
+    get:
+      summary: 'Детальная информация о клиенте'
+      operationId: 'get'
+      parameters:
+        - name: login
+          in: path
+          description: "Логин пользователя"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Детальная информация о клиенте'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientModel'
+        '500':
+          description: "Непредвиденная серверная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+
+    patch:
+      summary: 'Обновление данных клиента'
+      operationId: 'update'
+      parameters:
+        - name: login
+          in: path
+          description: "Логин пользователя"
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: 'Обновленные данные клиента'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientUpdate'
+            example: '{ "name": "Новоюзер2 Новоюзерович2", "password": "newPass2" }'
+      responses:
+        '200':
+          description: 'Данные клиента успешно обновлены'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientModel'
+        '404':
+          description: 'Такого клиента не существует в системе'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+        '500':
+          description: "Непредвиденная серверная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+
+    delete:
+      summary: 'Удаление клиента из системы'
+      operationId: 'remove'
+      parameters:
+        - name: login
+          in: path
+          description: "Логин пользователя"
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'Данные клиента успешно удалены'
+        '404':
+          description: 'Такого клиента не существует в системе'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+        '500':
+          description: "Непредвиденная серверная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+
+
+components:
+  schemas:
+    NewClientInput:
+      type: object
+      properties:
+        login:
+          type: string
+          required: true
+          example: 'pupkin1'
+          description: 'Логин пользователя'
+        password:
+          type: string
+          required: true
+          example: '12345'
+          description: 'Пароль пользователя'
+        name:
+          type: string
+          required: true
+          example: 'Пупкн Пупков'
+          description: 'ФИО пользователя'
+
+    ClientUpdate:
+      type: object
+      properties:
+        password:
+          type: string
+          required: true
+          example: '12345'
+          description: 'Пароль пользователя'
+        name:
+          type: string
+          required: true
+          example: 'Пупкн Пупков'
+          description: 'ФИО пользователя'
+
+    ClientModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        login:
+          type: string
+          required: true
+          example: 'pupkin1'
+          description: 'Логин пользователя'
+        password:
+          type: string
+          required: true
+          example: '12345'
+          description: 'Пароль пользователя'
+        name:
+          type: string
+          required: true
+          example: 'Пупкн Пупков'
+          description: 'ФИО пользователя'
+        roles:
+          type: string
+          required: true
+          example: 'USER,ADMIN'
+          description: 'Роли пользователя'
+
+    SystemError:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Заголовок ошибки
+        detail:
+          type: string
+          description: Описание ошибки
