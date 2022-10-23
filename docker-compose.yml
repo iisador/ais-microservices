@@ -3,10 +3,24 @@ version: "3.9"
 services:
   clients:
     build: /clients
+    environment:
+      - RABBIT_HOST=rabbitmq
     ports:
       - 8080:8080
+    depends_on:
+      - rabbitmq
 
   orders:
     build: /orders
+    environment:
+      - RABBIT_HOST=rabbitmq
     ports:
       - 8081:8080
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672

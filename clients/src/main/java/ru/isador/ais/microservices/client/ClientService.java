@@ -1,5 +1,8 @@
 package ru.isador.ais.microservices.client;
 
+import java.util.UUID;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +32,18 @@ public class ClientService {
                     return c;
                 })
                 .map(clientRepository::save)
-                .orElseThrow(() -> new UserNotFoundException(login));
+                .orElseThrow(() -> new ClientNotFoundException(login));
+    }
+
+    @RabbitListener(queues = "bonuses")
+    public void updateClientBonusBalance(String message) {
+        UUID clientUuid = UUID.fromString(message.substring(0, message.indexOf(':')));
+        clientRepository.findById(clientUuid)
+                .ifPresent(client -> {
+                            client.incBonuses(Integer.parseInt(message.substring(message.indexOf(':') + 1)));
+                            clientRepository.save(client);
+                        }
+                );
     }
 
     @Autowired

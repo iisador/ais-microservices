@@ -24,6 +24,8 @@ public class OrderService {
     private OrderRepository orderRepository;
     private OrderOperationRepository operationRepository;
     private OperationFactory operationFactory;
+    private BonusCalculator bonusCalculator;
+    private MessagePublisher messagePublisher;
 
     @Transactional
     public Order update(UUID orderId, OrderChangeSet changeSet) {
@@ -37,6 +39,11 @@ public class OrderService {
         operationFactory.get(changeSet).apply(order, changeSet);
         orderRepository.save(order);
         saveOperation(orderId, changeSet);
+
+        if (OperationType.PAY == OperationType.valueOf(changeSet.operation().toUpperCase())) {
+            int bonus = bonusCalculator.getBonus(order);
+            messagePublisher.sendMessage(String.format("%s:%s", order.getClientId(), bonus));
+        }
         return order;
     }
 
@@ -83,5 +90,15 @@ public class OrderService {
     @Autowired
     public void setOperationFactory(OperationFactory operationFactory) {
         this.operationFactory = operationFactory;
+    }
+
+    @Autowired
+    public void setBonusCalculator(BonusCalculator bonusCalculator) {
+        this.bonusCalculator = bonusCalculator;
+    }
+
+    @Autowired
+    public void setMessagePublisher(MessagePublisher messagePublisher) {
+        this.messagePublisher = messagePublisher;
     }
 }

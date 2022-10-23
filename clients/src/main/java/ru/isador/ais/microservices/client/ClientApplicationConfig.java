@@ -1,5 +1,7 @@
 package ru.isador.ais.microservices.client;
 
+import org.springframework.amqp.core.Queue;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -26,5 +28,10 @@ public class ClientApplicationConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/4.14.3/");
         registry.addResourceHandler("/openapi.yml")
                 .addResourceLocations("classpath:META-INF/openapi.yml");
+    }
+
+    @Bean
+    public Queue queue() {
+        return new Queue("bonuses");
     }
 }

@@ -31,10 +31,10 @@ public class Client implements Serializable {
     private String login;
 
     @Column
-    private double bonuses;
+    private int bonuses;
 
     public Client() {
-        bonuses = 0.0;
+        bonuses = 0;
     }
 
     public Client(String name, String password, String login, String... roles) {
@@ -42,7 +42,7 @@ public class Client implements Serializable {
         this.password = password;
         this.login = login;
         this.roles = String.join(",", roles);
-        bonuses = 0.0;
+        bonuses = 0;
     }
 
     public UUID getId() {
@@ -95,15 +95,15 @@ public class Client implements Serializable {
         this.login = login;
     }
 
-    public double getBonuses() {
+    public int getBonuses() {
         return bonuses;
     }
 
-    public void setBonuses(double bonuses) {
+    public void setBonuses(int bonuses) {
         this.bonuses = bonuses;
     }
 
-    public void incBonuses(double bonus) {
+    public void incBonuses(int bonus) {
         bonuses += bonus;
     }
 }

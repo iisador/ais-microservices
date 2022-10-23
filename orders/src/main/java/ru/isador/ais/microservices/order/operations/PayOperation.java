@@ -18,11 +18,9 @@ public class PayOperation extends Operation {
 
     @Override
     public void apply(Order order, OrderChangeSet changeSet) {
-        if(order.getStatus() == OrderStatus.COMPLETED) {
+        if (order.getStatus() == OrderStatus.COMPLETED) {
             throw new IllegalOrderOperationException(OperationType.PAY);
         }
         order.setStatus(OrderStatus.COMPLETED);
-
-        // fire message
     }
 }

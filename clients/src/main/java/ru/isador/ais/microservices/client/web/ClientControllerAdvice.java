@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import ru.isador.ais.microservices.client.ExistedClientException;
-import ru.isador.ais.microservices.client.UserNotFoundException;
+import ru.isador.ais.microservices.client.ClientNotFoundException;
 
 @RestControllerAdvice
 public class ClientControllerAdvice {
@@ -21,8 +21,8 @@ public class ClientControllerAdvice {
                         String.format("Пользователь \"%s\" уже существует", e.getLogin())));
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<SystemError> onUserNotFoundException(UserNotFoundException e) {
+    @ExceptionHandler(ClientNotFoundException.class)
+    public ResponseEntity<SystemError> onUserNotFoundException(ClientNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new SystemError("Ошибка выполнения операции",
                         String.format("Пользователь \"%s\" не найден", e.getLogin())));

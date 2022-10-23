@@ -1,10 +1,10 @@
 package ru.isador.ais.microservices.client;
 
-public class UserNotFoundException extends RuntimeException {
+public class ClientNotFoundException extends RuntimeException {
 
     private final String login;
 
-    public UserNotFoundException(String login) {
+    public ClientNotFoundException(String login) {
         super(null, null, false, false);
         this.login = login;
     }

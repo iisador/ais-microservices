@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ru.isador.ais.microservices.client.ClientService;
-import ru.isador.ais.microservices.client.UserNotFoundException;
+import ru.isador.ais.microservices.client.ClientNotFoundException;
 import ru.isador.ais.microservices.client.data.Client;
 import ru.isador.ais.microservices.client.data.ClientRepository;
 
@@ -39,7 +39,7 @@ public class ClientController {
     public EntityModel<Client> get(@PathVariable("login") String login) {
         return clientRepository.findByLogin(login)
                 .map(clientModelAssembler::toModel)
-                .orElseThrow(() -> new UserNotFoundException(login));
+                .orElseThrow(() -> new ClientNotFoundException(login));
     }
 
     @PostMapping
