@@ -1,17 +1,30 @@
 package ru.isador.ais.microservices.order;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType.HAL;
 
 @Configuration
-@EnableJpaRepositories("ru.isador.ais.microservices.order.data")
-@EnableWebMvc
 @EnableHypermediaSupport(type = HAL)
-@ComponentScan("ru.isador.ais.microservices.order.web")
-public class OrderApplicationConfig {
+public class OrderApplicationConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("*")
+                .allowedHeaders("Content-Type");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/swagger-ui/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/4.14.3/");
+        registry.addResourceHandler("/openapi.yml")
+                .addResourceLocations("classpath:META-INF/openapi.yml");
+    }
 }

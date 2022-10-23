@@ -7,7 +7,7 @@ info:
   version: '1.0.0'
 
 paths:
-  /api/clients:
+  /clients:
     get:
       summary: 'Вывести полный список клиентов'
       operationId: 'list'
@@ -59,17 +59,17 @@ paths:
                 $ref: '#/components/schemas/SystemError'
 
 
-  /api/clients/{login}:
+  /clients/{login}:
+    parameters:
+      - name: login
+        in: path
+        description: "Логин пользователя"
+        required: true
+        schema:
+          type: string
     get:
       summary: 'Детальная информация о клиенте'
       operationId: 'get'
-      parameters:
-        - name: login
-          in: path
-          description: "Логин пользователя"
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           description: 'Детальная информация о клиенте'
@@ -77,6 +77,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClientModel'
+        '404':
+          description: 'Нет такого клиента в системе'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
         '500':
           description: "Непредвиденная серверная ошибка"
           content:
@@ -87,13 +93,6 @@ paths:
     patch:
       summary: 'Обновление данных клиента'
       operationId: 'update'
-      parameters:
-        - name: login
-          in: path
-          description: "Логин пользователя"
-          required: true
-          schema:
-            type: string
       requestBody:
         required: true
         description: 'Обновленные данные клиента'
@@ -125,13 +124,6 @@ paths:
     delete:
       summary: 'Удаление клиента из системы'
       operationId: 'remove'
-      parameters:
-        - name: login
-          in: path
-          description: "Логин пользователя"
-          required: true
-          schema:
-            type: string
       responses:
         '204':
           description: 'Данные клиента успешно удалены'

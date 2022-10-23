@@ -21,7 +21,7 @@ import ru.isador.ais.microservices.client.data.Client;
 import ru.isador.ais.microservices.client.data.ClientRepository;
 
 @RestController
-@RequestMapping(value = "/api/clients", produces = "application/json")
+@RequestMapping(value = "/clients", produces = "application/json")
 public class ClientController {
 
     private ClientService clientService;

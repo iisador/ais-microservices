@@ -1,6 +1,7 @@
 package ru.isador.ais.microservices.client.data;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +16,7 @@ public class Client implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private UUID id;
 
     @Column
     private String name;
@@ -29,7 +30,11 @@ public class Client implements Serializable {
     @Column
     private String login;
 
+    @Column
+    private double bonuses;
+
     public Client() {
+        bonuses = 0.0;
     }
 
     public Client(String name, String password, String login, String... roles) {
@@ -37,13 +42,14 @@ public class Client implements Serializable {
         this.password = password;
         this.login = login;
         this.roles = String.join(",", roles);
+        bonuses = 0.0;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -87,5 +93,17 @@ public class Client implements Serializable {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public double getBonuses() {
+        return bonuses;
+    }
+
+    public void setBonuses(double bonuses) {
+        this.bonuses = bonuses;
+    }
+
+    public void incBonuses(double bonus) {
+        bonuses += bonus;
     }
 }

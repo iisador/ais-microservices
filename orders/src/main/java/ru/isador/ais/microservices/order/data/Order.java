@@ -1,11 +1,19 @@
 package ru.isador.ais.microservices.order.data;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -13,44 +21,65 @@ import jakarta.persistence.Table;
 public class Order implements Serializable {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+    private UUID id;
 
     @Column
-    private String deliveryAddress;
+    private UUID clientId;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "ORDER_ID")
+    private Set<Product> products = new HashSet<>();
 
     @Column
-    private String description;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     public Order() {
     }
 
-    public Order(String deliveryAddress, String description) {
-        this.deliveryAddress = deliveryAddress;
-        this.description = description;
+    public Order(UUID id, UUID clientId) {
+        this.id = id;
+        this.clientId = clientId;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public String getDeliveryAddress() {
-        return deliveryAddress;
+    public UUID getClientId() {
+        return clientId;
     }
 
-    public void setDeliveryAddress(String deliveryAddress) {
-        this.deliveryAddress = deliveryAddress;
+    public void setClientId(UUID clientId) {
+        this.clientId = clientId;
     }
 
-    public String getDescription() {
-        return description;
+    public Set<Product> getProducts() {
+        return products;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setProducts(Set<Product> products) {
+        this.products = products;
+    }
+
+    public void addProducts(Set<Product> products) {
+        this.products.addAll(products);
+    }
+
+    public Product addProduct(Product product) {
+        products.add(product);
+        return product;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 }

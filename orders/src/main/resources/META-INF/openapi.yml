@@ -1,0 +1,258 @@
+openapi: '3.0.3'
+info:
+  title: 'Сервис работы с заказами'
+  description: >
+    Практическая работа по курсу АИС (ИТ17.9д): "Микросервисная архитектура"
+    Реализация сервиса работы с заказами.
+  version: '1.0.0'
+
+paths:
+  /orders:
+    get:
+      summary: 'Вывести полный список заказов всех клиентов'
+      operationId: 'list'
+      responses:
+        '200':
+          description: 'Массив заказов'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderModel'
+        '500':
+          description: "Непредвиденная серверная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+
+    post:
+      summary: 'Создание нового заказа'
+      operationId: 'create'
+      requestBody:
+        required: true
+        description: 'Создание заказа из переданной клиентом корзины.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Basket'
+            example: '{ "id": "{{$uuid}}", "products": [ { "id": "{{$uuid}}", "quantity": 1 }, { "id": "{{$uuid}}", "quantity": 2 }, { "id": "{{$uuid}}", "quantity": 3 } ] }'
+      responses:
+        '201':
+          description: 'Новый заказ создан'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderModel'
+        '202':
+          description: 'Такой заказ уже был создан ранее. Такой id уже есть в БД'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+        '500':
+          description: "Непредвиденная серверная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+
+
+  /orders/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: "Уникальный UUID заказа"
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: 'Детальная информация о заказе'
+      operationId: 'get'
+      responses:
+        '200':
+          description: 'Детальная информация о заказе'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderModel'
+        '404':
+          description: 'Нет такого заказа в системе'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+        '500':
+          description: "Непредвиденная серверная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+
+    patch:
+      summary: 'Обновление заказа'
+      operationId: 'update'
+      requestBody:
+        required: true
+        description: 'Обновление данных заказа. Каждая операция должна иметь уникальный id'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderChangeSet'
+            example: '{ "id": "5ae028d7-6960-469f-ae0d-5dc8b3a6b085", "operation": "add", "productId": "577d96f6-7159-4dd2-8606-6d3fa8382736", "quantity": 5 }'
+      responses:
+        '200':
+          description: 'Заказ успешно обновлен'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderModel'
+        '404':
+          description: 'Нет такого заказа в системе'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+        '406':
+          description: 'Возникла ошибка при выполнении операции'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+        '500':
+          description: "Непредвиденная серверная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+
+    delete:
+      summary: 'Удаление заказа из системы'
+      operationId: 'remove'
+      responses:
+        '204':
+          description: 'Заказ успешно удален'
+        '404':
+          description: 'Нет такого заказа в системе'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+        '500':
+          description: "Непредвиденная серверная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemError'
+
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          required: true
+          example: '4ae028d7-6960-469f-ae0d-5dc8b3a6b085'
+          description: 'UUID продукта в заказе'
+        quantity:
+          type: integer
+          format: int64
+          required: true
+          example: '3'
+          description: 'Количество продукта'
+
+    Basket:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          required: true
+          example: '5ae028d7-6960-469f-ae0d-5dc8b3a6b085'
+          description: 'Уникальный UUID заказа'
+        clientId:
+          type: string
+          format: uuid
+          required: true
+          example: '577d96f6-7159-4dd2-8606-6d3fa8382736'
+          description: 'UUID клиента создающего заказ'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+          description: 'Набор продуктов в заказе'
+
+    OrderChangeSet:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          required: true
+          example: '3ae028d7-6960-469f-ae0d-5dc8b3a6b085'
+          description: 'Уникальный UUID операции'
+        operation:
+          type: string
+          required: true
+          example: 'add'
+          description: >
+            Операция над заказом. Принимает следующие значения:
+            add - добавление товара в заказ;
+            remove - удаление товара из заказа;
+            plus - увеличение количества товара в заказе;
+            minus - уменьшение количества товара в заказе;
+            pay - оплата заказа
+        productId:
+          type: string
+          format: uuid
+          required: false
+          example: '4ae028d7-6960-469f-ae0d-5dc8b3a6b085'
+          description: 'UUID продукта. Нужен для операций add, remove, minus, plus'
+        quantity:
+          type: integer
+          format: int64
+          required: false
+          example: '3'
+          description: 'Инкремент\декремент количества товара в заказе. Нужен для операций plus, minus'
+
+    OrderModel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          required: true
+          example: '5ae028d7-6960-469f-ae0d-5dc8b3a6b085'
+          description: 'Уникальный UUID заказа. Передается клиентом при создании заказа'
+        clientId:
+          type: string
+          format: uuid
+          required: true
+          example: '577d96f6-7159-4dd2-8606-6d3fa8382736'
+          description: 'UUID клиента создавшего заказ'
+        status:
+          type: string
+          required: true
+          example: 'DRAFT'
+          description: 'Статус заказа в системе'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+          description: 'Набор продуктов в заказе'
+
+
+    SystemError:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Заголовок ошибки
+        detail:
+          type: string
+          description: Описание ошибки

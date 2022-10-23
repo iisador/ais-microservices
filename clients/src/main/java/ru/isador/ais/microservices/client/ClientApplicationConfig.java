@@ -26,12 +26,5 @@ public class ClientApplicationConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/4.14.3/");
         registry.addResourceHandler("/openapi.yml")
                 .addResourceLocations("classpath:META-INF/openapi.yml");
-        registry.addResourceHandler("/css/**")
-                .addResourceLocations("classpath:static/css/");
-        registry.addResourceHandler("/img/**")
-                .addResourceLocations("classpath:static/img/");
-        registry.addResourceHandler("/js/**")
-                .addResourceLocations("classpath:static/js/");
     }
-
 }

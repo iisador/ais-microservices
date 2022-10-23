@@ -18,7 +18,7 @@ public class OrderModelAssembler implements RepresentationModelAssembler<Order, 
         EntityModel<Order> model = EntityModel.of(entity);
         model.add(linkTo(methodOn(OrderController.class).get(entity.getId())).withSelfRel());
         model.add(linkTo(methodOn(OrderController.class).remove(entity.getId())).withRel("delete"));
-        model.add(linkTo(methodOn(OrderController.class).update(entity.getId(), null)).withRel(IanaLinkRelations.EDIT));
+        model.add(linkTo(methodOn(OrderController.class).update(entity.getId(), new OrderChangeSet(null, null, null, null))).withRel(IanaLinkRelations.EDIT));
         return model;
     }
 }
